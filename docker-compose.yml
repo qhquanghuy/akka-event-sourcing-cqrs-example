@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+
+  write_db:
+    image: postgres:13.6-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PWD}
+
+  flyway_write_db:
+    image: flyway/flyway
+    command: -url=jdbc:postgresql://write_db/ -schemas=public -user=${DB_USER} -password=${DB_PWD} migrate
+    volumes:
+      - ./ddl-scripts/write-db:/flyway/sql
+    depends_on:
+      - write_db
+
+networks:
+  default:
+    name: btc-billionaire
