@@ -7,7 +7,7 @@ import Dependencies._
 fork := true
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
-
+Test / parallelExecution := false
 lazy val root = (project in file(".")).
   settings(
     inThisBuild(List(
@@ -19,5 +19,6 @@ lazy val root = (project in file(".")).
     libraryDependencies ++= cats.all,
     libraryDependencies ++= macwire.all,
     libraryDependencies ++= logback.all,
-    libraryDependencies ++= postgre.all
+    libraryDependencies ++= postgre.all,
+    libraryDependencies ++= libtest.all
   )
