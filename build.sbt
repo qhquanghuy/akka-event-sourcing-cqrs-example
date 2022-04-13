@@ -18,5 +18,6 @@ lazy val root = (project in file(".")).
     libraryDependencies ++= akka.all,
     libraryDependencies ++= cats.all,
     libraryDependencies ++= macwire.all,
-    libraryDependencies ++= refined.all
+    libraryDependencies ++= logback.all,
+    libraryDependencies ++= postgre.all
   )

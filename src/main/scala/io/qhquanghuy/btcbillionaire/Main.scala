@@ -1,18 +1,20 @@
 package io.qhquanghuy.btcbillionaire
 
-import scala.util.Failure
-import scala.util.Success
+import scala.util.{Success, Failure}
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
 import akka.actor.typed.ActorSystem
-
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
-
 import akka.management.scaladsl.AkkaManagement
 import akka.management.cluster.bootstrap.ClusterBootstrap
 import akka.actor.typed.scaladsl.Behaviors
-import com.typesafe.config.ConfigFactory
+
+import slick.jdbc.JdbcBackend._
+
+import io.qhquanghuy.btcbillionaire.application.donation.DonationCommand
+
 
 
 object Main {
@@ -41,11 +43,13 @@ object Main {
   def main(args: Array[String]): Unit = {
 
     lazy val system = ActorSystem[Nothing](Behaviors.empty, "BTCBillionaire")
-    val module = new Module()
-    module.routes
+    val module = new Module(system)
+
 
     AkkaManagement(system).start()
     ClusterBootstrap(system).start()
+
+    DonationCommand.init(system)
 
 
     startHttpServer(module.routes)(system)

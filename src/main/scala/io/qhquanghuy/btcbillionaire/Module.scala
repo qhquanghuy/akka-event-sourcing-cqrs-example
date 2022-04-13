@@ -9,7 +9,7 @@ import com.softwaremill.macwire._
 import _root_.io.qhquanghuy.btcbillionaire.adapter.webservice._
 import _root_.io.qhquanghuy.btcbillionaire.application._
 
-final class Module() {
+final class Module(system: ActorSystem[_]) {
   lazy val donationService: DonationService = wire[DonationService]
   lazy val donationSummaryService: DonationSummaryService = wire[DonationSummaryService]
 

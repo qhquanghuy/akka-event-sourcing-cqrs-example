@@ -4,6 +4,7 @@ object Dependencies {
     lazy val httpVersion = "10.2.9"
     lazy val version = "2.6.19"
     lazy val managementVersion = "1.1.3"
+    lazy val persistenceJdbcVersion = "5.0.4"
 
 
     lazy val http = "com.typesafe.akka" %% "akka-http" % httpVersion
@@ -16,6 +17,10 @@ object Dependencies {
     lazy val managementClusterHttp = "com.lightbend.akka.management" %% "akka-management-cluster-http" % managementVersion
     lazy val managementClusterBootstrap = "com.lightbend.akka.management" %% "akka-management-cluster-bootstrap" % managementVersion
     lazy val discovery = "com.typesafe.akka" %% "akka-discovery" % version
+    lazy val persistence = "com.typesafe.akka" %% "akka-persistence-typed" % version
+    lazy val serialization = "com.typesafe.akka" %% "akka-serialization-jackson" % version
+    lazy val persistenceJdbc = "com.lightbend.akka" %% "akka-persistence-jdbc" % persistenceJdbcVersion
+
 
 
     def all = Seq(
@@ -28,7 +33,10 @@ object Dependencies {
       management,
       managementClusterHttp,
       managementClusterBootstrap,
-      discovery
+      discovery,
+      persistence,
+      serialization,
+      persistenceJdbc
     )
 
   }
@@ -54,12 +62,33 @@ object Dependencies {
     def all = Seq(spray)
   }
 
+
+  object slick {
+    lazy val version = "3.3.3"
+    lazy val slick = "com.typesafe.slick" %% "slick" % version
+    lazy val slf4j = "org.slf4j" % "slf4j-nop" % "1.6.4"
+    lazy val hikaricp = "com.typesafe.slick" %% "slick-hikaricp" % version
+
+    def all = Seq(slick, slf4j, hikaricp)
+  }
+
+  object logback {
+    lazy val classic = "ch.qos.logback" % "logback-classic" % "1.2.3"
+    def all = Seq(classic)
+  }
+
+  object postgre {
+    lazy val postgresql = "org.postgresql" % "postgresql" % "42.2.18"
+    def all = Seq(postgresql)
+  }
+
   object test {
     lazy val scalatest = "org.scalatest" %% "scalatest" % "3.1.4" % Test
 
-    lazy val httpTest = "com.typesafe.akka" %% "akka-http-testkit" % akka.httpVersion % Test
-    lazy val actorTest = "com.typesafe.akka" %% "akka-actor-testkit-typed" % akka.version % Test
+    lazy val akkaHttp = "com.typesafe.akka" %% "akka-http-testkit" % akka.httpVersion % Test
+    lazy val akkaActor = "com.typesafe.akka" %% "akka-actor-testkit-typed" % akka.version % Test
+    lazy val akkaPersistenec = "com.typesafe.akka" %% "akka-persistence-testkit" % akka.version % Test
 
-    def all = Seq(scalatest, httpTest, actorTest)
+    def all = Seq(akkaHttp, akkaActor, akkaPersistenec)
   }
 }
