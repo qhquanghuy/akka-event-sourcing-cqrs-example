@@ -39,10 +39,9 @@ object Main {
         system.terminate()
     }
   }
-  //#start-http-server
-  def main(args: Array[String]): Unit = {
 
-    lazy val system = ActorSystem[Nothing](Behaviors.empty, "BTCBillionaire")
+
+  def init(system: ActorSystem[_]) = {
     val module = new Module(system)
 
 
@@ -53,5 +52,11 @@ object Main {
 
 
     startHttpServer(module.routes)(system)
+  }
+
+  def main(args: Array[String]): Unit = {
+
+    lazy val system = ActorSystem[Nothing](Behaviors.empty, "BTCBillionaire")
+    init(system)
   }
 }

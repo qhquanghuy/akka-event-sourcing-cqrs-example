@@ -82,13 +82,14 @@ object Dependencies {
     def all = Seq(postgresql)
   }
 
-  object test {
+  object libtest {
     lazy val scalatest = "org.scalatest" %% "scalatest" % "3.1.4" % Test
 
     lazy val akkaHttp = "com.typesafe.akka" %% "akka-http-testkit" % akka.httpVersion % Test
     lazy val akkaActor = "com.typesafe.akka" %% "akka-actor-testkit-typed" % akka.version % Test
-    lazy val akkaPersistenec = "com.typesafe.akka" %% "akka-persistence-testkit" % akka.version % Test
+    lazy val akkaPersistence = "com.typesafe.akka" %% "akka-persistence-testkit" % akka.version % Test
+    lazy val h2 = "com.h2database" % "h2" % "1.4.192" % Test
 
-    def all = Seq(akkaHttp, akkaActor, akkaPersistenec)
+    def all = Seq(akkaHttp, akkaActor, akkaPersistence, scalatest, h2)
   }
 }
