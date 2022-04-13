@@ -5,17 +5,29 @@ services:
   write_db:
     image: postgres:13.6-alpine
     restart: always
+    networks:
+      default:
+        aliases:
+          - ${WRITE_DB_HOST}
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PWD}
+      POSTGRES_DB: ${WRITE_DB_NAME}
+      POSTGRES_USER: ${WRITE_DB_USER}
+      POSTGRES_PASSWORD: ${WRITE_DB_PWD}
 
   flyway_write_db:
     image: flyway/flyway
-    command: -url=jdbc:postgresql://write_db/ -schemas=public -user=${DB_USER} -password=${DB_PWD} migrate
+    command: -url=jdbc:postgresql://${WRITE_DB_HOST}/${WRITE_DB_NAME} -user=${WRITE_DB_USER} -password=${WRITE_DB_PWD} migrate
     volumes:
       - ./ddl-scripts/write-db:/flyway/sql
-    depends_on:
-      - write_db
+  app:
+    image: hseeberger/scala-sbt:11.0.14.1-oraclelinux8_1.6.2_2.13.8
+    env_file:
+      - .env
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/app
+    command: /bin/bash -c "cd /app && sbt --batch -Dsbt.server.forcestart=true run"
 
 networks:
   default:
