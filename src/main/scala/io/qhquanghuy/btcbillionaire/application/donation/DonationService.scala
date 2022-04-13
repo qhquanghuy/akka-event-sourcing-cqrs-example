@@ -1,4 +1,4 @@
-package io.qhquanghuy.btcbillionaire.application
+package io.qhquanghuy.btcbillionaire.application.donation
 
 import scala.concurrent.Future
 import scala.concurrent.duration._

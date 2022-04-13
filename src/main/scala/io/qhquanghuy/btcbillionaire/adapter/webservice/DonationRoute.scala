@@ -9,7 +9,7 @@ import akka.http.scaladsl.model.StatusCodes
 
 import spray.json._
 
-import _root_.io.qhquanghuy.btcbillionaire.application.DonationService
+import _root_.io.qhquanghuy.btcbillionaire.application.donation.DonationService
 import _root_.io.qhquanghuy.btcbillionaire.utils.JsonFormats._
 import _root_.io.qhquanghuy.btcbillionaire.domain.DonationDTO
 import _root_.io.qhquanghuy.btcbillionaire.utils.models._
