@@ -89,17 +89,16 @@ class IntegrationTests extends AnyWordSpec
 
       val dtos = sample100DTOS.values.flatMap(identity).toList
       val result = Future.sequence {
-        dtos.take(99).map(dto => {
+        dtos.map(dto => {
           donationService.donate(dto).value
         })
       }
-      .flatMap(_ => donationService.donate(dtos.last).value)
       .futureValue(timeout(10.minutes))
 
       val sum = dtos.map(_.amount).sum
 
-      result.isRight should be (true)
-      result.toOption.get.balance.value should === (sum)
+      result.forall(_.isRight) should be (true)
+      result.map(_.toOption.get.balance.value).max should === (sum)
     }
 
     "failed persist event and update current balance if amount is negative" in {

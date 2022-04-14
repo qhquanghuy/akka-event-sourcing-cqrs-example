@@ -20,5 +20,6 @@ lazy val root = (project in file(".")).
     libraryDependencies ++= macwire.all,
     libraryDependencies ++= logback.all,
     libraryDependencies ++= postgres.all,
-    libraryDependencies ++= libtest.all
+    libraryDependencies ++= libtest.all,
   )
+  .enablePlugins(JavaAppPackaging)

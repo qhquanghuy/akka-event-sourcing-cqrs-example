@@ -38,14 +38,13 @@ services:
     volumes:
       - ./ddl-scripts/read-db:/flyway/sql
   app:
-    image: hseeberger/scala-sbt:11.0.14.1-oraclelinux8_1.6.2_2.13.8
+    build: .
     env_file:
       - .env
     ports:
       - 8080:8080
     volumes:
       - ./:/app
-    command: /bin/bash -c "cd /app && sbt --batch -Dsbt.server.forcestart=true run"
 
 networks:
   default:
