@@ -37,6 +37,7 @@ Prerequisite
 
 - Docker version 20.10.11
 - Docker Compose version 2.2.2
+- Create .env file in directory, see .env.example
 
 ```bash
 $> chmod +x ./startup.sh
