@@ -5,7 +5,9 @@ import java.time.ZonedDateTime
 import io.qhquanghuy.btcbillionaire.domain.donation.Donation
 import io.qhquanghuy.btcbillionaire.utils.datetime._
 
-final case class DonationSummary private (donations: Seq[Donation])
+final case class DonationSummary private (donations: Seq[Donation]) {
+  private def copy() = ???
+}
 
 object DonationSummary {
   def mk(donations: Seq[Donation]) = {
