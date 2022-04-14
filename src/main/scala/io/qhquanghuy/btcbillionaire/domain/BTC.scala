@@ -7,14 +7,6 @@ final case class BTC private (value: BigDecimal) {
 }
 
 object BTC {
-  sealed trait Error {
-    def msg: String
-  }
-  object Error {
-    final object NegativeAmount extends Error {
-      override def msg: String = "Negative amount is invalid"
-    }
-  }
 
   def mk(amount: BigDecimal): Either[BTCCreationError, BTC] = {
     if (amount.signum == -1) Left(BTCCreationError.NegativeAmount)

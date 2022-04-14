@@ -10,7 +10,7 @@ import io.qhquanghuy.btcbillionaire.domain.donationsummary._
 import io.qhquanghuy.btcbillionaire.port.query.DonationSummaryQuery
 import io.qhquanghuy.btcbillionaire.utils.datetime._
 
-final class DonationSummaryService(repo: DonationSummaryQuery) {
+final class DonationSummaryService(query: DonationSummaryQuery) {
   private val logger = LoggerFactory.getLogger(getClass)
 
 
@@ -18,7 +18,7 @@ final class DonationSummaryService(repo: DonationSummaryQuery) {
 
     logger.info(s"summary for ${startTime} <= datetime < ${endTime}")
 
-    repo.findByLeftCloseRightOpen(
+    query.findByLeftCloseRightOpen(
       beginningOfHour(startTime).toInstant(),
       beginningOfHour(endTime).toInstant()
     )
