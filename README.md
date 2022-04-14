@@ -23,7 +23,7 @@ Build an event sourcing and CQRS service using Akka stack: persistence, cluster,
 
 2. /donation-summary
 
-    GET donation summary by each hour of
+    GET donation summary by each hour. Data aggrate by datetime that start_time <= datetime < endtime
 
     Example:
 
