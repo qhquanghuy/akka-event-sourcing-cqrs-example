@@ -1,5 +1,7 @@
 package io.qhquanghuy.btcbillionaire.domain.donationsummary
 
+import java.time.ZonedDateTime
+
 import io.qhquanghuy.btcbillionaire.domain.donation.Donation
 import io.qhquanghuy.btcbillionaire.utils.datetime._
 
@@ -14,6 +16,7 @@ object DonationSummary {
           case (datetime, amount) => Donation(datetime, amount)
         }
         .toSeq
+        .sortBy(_.time)(implicitly[Ordering[ZonedDateTime]].reverse)
     }
   }
 }
