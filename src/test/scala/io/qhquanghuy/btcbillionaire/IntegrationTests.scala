@@ -87,16 +87,19 @@ class IntegrationTests extends AnyWordSpec
   "DonationService" should {
     "successfully persist concurrently 100 events and update current balance if amount is positive" in {
 
-      val dtos = sample100DTOS.values.flatMap(identity)
+      val dtos = sample100DTOS.values.flatMap(identity).toList
       val result = Future.sequence {
-        dtos.map(dto => donationService.donate(dto).value)
+        dtos.take(99).map(dto => {
+          donationService.donate(dto).value
+        })
       }
+      .flatMap(_ => donationService.donate(dtos.last).value)
       .futureValue(timeout(10.minutes))
 
       val sum = dtos.map(_.amount).sum
 
-      result.forall(_.isRight) should be (true)
-      result.last.toOption.get.balance.value should === (sum)
+      result.isRight should be (true)
+      result.toOption.get.balance.value should === (sum)
     }
 
     "failed persist event and update current balance if amount is negative" in {
@@ -111,8 +114,8 @@ class IntegrationTests extends AnyWordSpec
 
   "DonationSummaryService" should {
     "sync successfully from write db" in {
-      println("wait 5s.....")
-      Thread.sleep(5 * 1000)
+      println("wait 3s.....")
+      Thread.sleep(3 * 1000)
 
       val startTime = timeSeed.withHour(hourSeeds.head)
       val endTime = timeSeed.withHour(hourSeeds.last)

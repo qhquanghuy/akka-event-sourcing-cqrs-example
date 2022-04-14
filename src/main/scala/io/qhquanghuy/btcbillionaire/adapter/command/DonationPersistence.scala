@@ -32,14 +32,17 @@ object DonationPersistence {
   private def handleCommand(walletAddress: String, state: State, command: Command): ReplyEffect[Event, State] = {
     command match {
       case Command.Donate(donation, replyTo) =>
-        logger.info(s"handleCommand ${donation}")
+        logger.info(s"handleCommand ${command}")
         Effect.persist(DonationEvent.Donated(donation))
-          .thenReply(replyTo)(updatedState => StatusReply.success(updatedState.wallet))
+          .thenReply(replyTo)(updatedState => {
+            logger.info(s"handleCommand ${command}, thenReply ${updatedState.wallet}")
+            StatusReply.success(updatedState.wallet)
+          })
     }
   }
 
   private def handleEvent(state: State, event: Event): State = {
-    logger.info(s"handleEvent ${event}")
+    logger.info(s"handleEvent ${event}, ${state.wallet}")
     event match {
       case DonationEvent.Donated(donation) => state.add(donation.amount)
     }
