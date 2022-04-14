@@ -1,22 +1,19 @@
 package io.qhquanghuy.btcbillionaire.adapter.projection
 
-import scala.reflect.ClassTag
 import scala.concurrent.ExecutionContext.Implicits.global
 
-import akka.actor.typed.ActorSystem
 import akka.Done
+import akka.actor.typed.ActorSystem
 import akka.projection.eventsourced.EventEnvelope
 import akka.projection.slick.SlickProjection
 import akka.projection.slick.SlickHandler
 
-import slick.dbio.DBIO
-import slick.jdbc.PostgresProfile.api._
+import slick.jdbc.JdbcProfile
 
 import org.slf4j.LoggerFactory
 
 import io.qhquanghuy.btcbillionaire.domain.donation.{Event => DonationEvent, DonationRepository}
 import io.qhquanghuy.btcbillionaire.adapter.database.{DonationDAO, DonationRow}
-import io.qhquanghuy.btcbillionaire.utils.CborSerialize
 import io.qhquanghuy.btcbillionaire.adapter.command.DonationPersistence
 
 
@@ -24,14 +21,13 @@ import io.qhquanghuy.btcbillionaire.adapter.command.DonationPersistence
 
 
 
-final class DonationSummaryProjectionHandler(dao: DonationDAO) extends SlickHandler[EventEnvelope[DonationPersistence.Event]] {
-
-private val logger = LoggerFactory.getLogger(getClass)
-  override def process(envelope: EventEnvelope[DonationPersistence.Event]): DBIO[Done] = {
+final class DonationSummaryProjectionHandler[P <: JdbcProfile](dao: DonationDAO[P]) extends SlickHandler[EventEnvelope[DonationPersistence.Event]] {
+  private val logger = LoggerFactory.getLogger(getClass)
+  override def process(envelope: EventEnvelope[DonationPersistence.Event]): slick.dbio.DBIO[Done] = {
     logger.info(s"process ${envelope.event}")
-    envelope.event.value match {
+    envelope.event match {
       case DonationEvent.Donated(donation) =>
-        (dao.table += DonationRow(None, donation.time.toInstant(), donation.amount.value))
+        dao.insertAction(DonationRow(None, donation.time.toInstant.toEpochMilli(), donation.amount.value))
           .map(_ => Done)
     }
   }

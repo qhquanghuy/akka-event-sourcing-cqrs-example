@@ -12,15 +12,16 @@ import akka.management.scaladsl.AkkaManagement
 import akka.management.cluster.bootstrap.ClusterBootstrap
 import akka.actor.typed.scaladsl.Behaviors
 
-import slick.jdbc.JdbcBackend._
-import slick.basic.DatabaseConfig
 import slick.jdbc.PostgresProfile
+import slick.basic.DatabaseConfig
 
 import com.softwaremill.macwire._
 
 import io.qhquanghuy.btcbillionaire.adapter.command.DonationPersistence
 import io.qhquanghuy.btcbillionaire.adapter.projection.DonationSummaryProjection
-import slick.jdbc.PostgresProfile
+import slick.driver.JdbcProfile
+import com.typesafe.config.ConfigFactory
+
 
 
 
@@ -52,12 +53,15 @@ object Main {
   }
 
 
-  def init(system: ActorSystem[_]) = {
+  def init[P <: JdbcProfile : ClassTag](system: ActorSystem[_], routes: Route, dbConfig: DatabaseConfig[P]) = {
 
     AkkaManagement(system).start()
     ClusterBootstrap(system).start()
 
     DonationPersistence.init(system)
+    DonationSummaryProjection.init(system, dbConfig)
+    startHttpServer(routes)(system)
+
   }
 
   def main(args: Array[String]): Unit = {
@@ -65,13 +69,8 @@ object Main {
     lazy val system = ActorSystem[Nothing](Behaviors.empty, "BTCBillionaire")
     lazy val dbConfig: DatabaseConfig[PostgresProfile] = DatabaseConfig.forConfig("akka.projection.slick")
 
-    val module = new Module {
-      def actorSystem: ActorSystem[_] = system
-      def databaseConfig: DatabaseConfig[PostgresProfile] = dbConfig
-    }
+    val module = wire[AppModule[PostgresProfile]]
 
-    init(system)
-    startHttpServer(module.routes)(system)
-    DonationSummaryProjection.init(system, dbConfig)
+    init(system, module.routes, dbConfig)
   }
 }

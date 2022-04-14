@@ -14,7 +14,7 @@ import akka.cluster.sharding.typed.scaladsl.{EntityContext, ClusterSharding, Ent
 
 import io.qhquanghuy.btcbillionaire.domain.Wallet
 import io.qhquanghuy.btcbillionaire.domain.donation.{Event => DonationEvent, Donation}
-import io.qhquanghuy.btcbillionaire.utils.CborSerialize
+import org.slf4j.LoggerFactory
 
 
 sealed trait Command
@@ -25,18 +25,22 @@ object DonationPersistence {
   val EntityKey: EntityTypeKey[Command] = EntityTypeKey[Command]("DonationCommand")
   val Tag = "Donation"
 
-  type Event = CborSerialize[DonationEvent]
+  type Event = DonationEvent
+
+  val logger = LoggerFactory.getLogger(this.getClass())
 
   private def handleCommand(walletAddress: String, state: State, command: Command): ReplyEffect[Event, State] = {
     command match {
       case Command.Donate(donation, replyTo) =>
-        Effect.persist(CborSerialize[DonationEvent](DonationEvent.Donated(donation)))
+        logger.info(s"handleCommand ${donation}")
+        Effect.persist(DonationEvent.Donated(donation))
           .thenReply(replyTo)(updatedState => StatusReply.success(updatedState.wallet))
     }
   }
 
   private def handleEvent(state: State, event: Event): State = {
-    event.value match {
+    logger.info(s"handleEvent ${event}")
+    event match {
       case DonationEvent.Donated(donation) => state.add(donation.amount)
     }
   }

@@ -62,14 +62,6 @@ object Dependencies {
 
     def all = Seq(macros)
   }
-  object slick {
-    lazy val version = "3.3.3"
-    lazy val slick = "com.typesafe.slick" %% "slick" % version
-    lazy val slf4j = "org.slf4j" % "slf4j-nop" % "1.6.4"
-    lazy val hikaricp = "com.typesafe.slick" %% "slick-hikaricp" % version
-
-    def all = Seq(slick, slf4j, hikaricp)
-  }
 
   object logback {
     lazy val classic = "ch.qos.logback" % "logback-classic" % "1.2.3"

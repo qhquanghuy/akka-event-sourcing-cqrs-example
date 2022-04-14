@@ -32,8 +32,7 @@ final class DonationSumaryRoute(donationSummaryService: DonationSummaryService) 
 
       complete {
         donationSummaryService.summary(startTime, endTime)
-          .map(summary => summary.donations.map(donation => DonationDTO(donation.time, donation.amount.value)))
-          .map(donations => DataResponse(donations).toJson)
+          .map(summary => DataResponse(summary.donations).toJson)
       }
   }
 }

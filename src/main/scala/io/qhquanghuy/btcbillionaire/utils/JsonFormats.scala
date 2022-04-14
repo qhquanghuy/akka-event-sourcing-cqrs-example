@@ -48,5 +48,6 @@ object JsonFormats {
 
   implicit val errorResponseFormat = jsonFormat2(ErrorResponse)
 
-  implicit val donationRequestFormat = jsonFormat2(DonationDTO)
+  implicit val donationDTOFormat = jsonFormat2(DonationDTO)
+  implicit val donationFormat = jsonFormat2(Donation)
 }

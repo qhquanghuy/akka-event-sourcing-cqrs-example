@@ -14,7 +14,7 @@ import akka.projection.{ ProjectionBehavior, ProjectionId }
 import akka.projection.slick.SlickProjection
 
 import slick.basic.DatabaseConfig
-import slick.jdbc.PostgresProfile
+import slick.jdbc.JdbcProfile
 
 import io.qhquanghuy.btcbillionaire.domain.donation.{Event => DonationEvent}
 import io.qhquanghuy.btcbillionaire.adapter.command.DonationPersistence
@@ -25,9 +25,9 @@ import io.qhquanghuy.btcbillionaire.adapter.database.DonationDAO
 
 object DonationSummaryProjection {
 
-  private def createProjection(
+  private def createProjection[P <: JdbcProfile : ClassTag](
     system: ActorSystem[_],
-    databaseConfig: DatabaseConfig[PostgresProfile]
+    databaseConfig: DatabaseConfig[P]
   ): ExactlyOnceProjection[Offset, EventEnvelope[DonationPersistence.Event]] = {
 
     val sourceProvider : SourceProvider[Offset, EventEnvelope[DonationPersistence.Event]] =
@@ -47,7 +47,7 @@ object DonationSummaryProjection {
   }
 
 
-  def init(system: ActorSystem[_], databaseConfig: DatabaseConfig[PostgresProfile]): Unit = {
+  def init[P <: JdbcProfile : ClassTag](system: ActorSystem[_], databaseConfig: DatabaseConfig[P]): Unit = {
     ShardedDaemonProcess(system).init(
       name = "DonationSummaryProjection",
       numberOfInstances = 1,
