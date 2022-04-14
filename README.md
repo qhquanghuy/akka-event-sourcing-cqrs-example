@@ -29,7 +29,7 @@ Build an event sourcing and CQRS service using Akka stack: persistence, cluster,
 
 2. /donation-summary
 
-    GET donation summary by each UTC hour. Data aggrate by datetime that start_time <= datetime < endtime
+    GET donation summary by each UTC hour in DESC order. Data aggrate by datetime that start_time <= datetime < endtime
 
     Example:
 
@@ -40,7 +40,7 @@ Build an event sourcing and CQRS service using Akka stack: persistence, cluster,
     Response:
     
     ```json
-    {"data":[{"amount":3.10000000,"time":"2022-04-13T09:00Z[UTC]"},{"amount":13.30000000,"time":"2022-04-13T08:00Z[UTC]"},{"amount":0.00200000,"time":"2022-04-13T07:00Z[UTC]"}]}
+    "data":[{"amount":3.10000000,"time":"2022-04-13T09:00Z[UTC]"},{"amount":13.30000000,"time":"2022-04-13T08:00Z[UTC]"},{"amount":0.00200000,"time":"2022-04-13T07:00Z[UTC]"}]}
     ```
 
 ### Run app in local
