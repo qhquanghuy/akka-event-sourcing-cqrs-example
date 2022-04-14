@@ -19,6 +19,24 @@ services:
     command: -url=jdbc:postgresql://${WRITE_DB_HOST}/${WRITE_DB_NAME} -user=${WRITE_DB_USER} -password=${WRITE_DB_PWD} migrate
     volumes:
       - ./ddl-scripts/write-db:/flyway/sql
+
+  read_db:
+    image: postgres:13.6-alpine
+    restart: always
+    networks:
+      default:
+        aliases:
+          - ${READ_DB_HOST}
+    environment:
+      POSTGRES_DB: ${READ_DB_NAME}
+      POSTGRES_USER: ${READ_DB_USER}
+      POSTGRES_PASSWORD: ${READ_DB_PWD}
+
+  flyway_read_db:
+    image: flyway/flyway
+    command: -url=jdbc:postgresql://${READ_DB_HOST}/${READ_DB_NAME} -user=${READ_DB_USER} -password=${READ_DB_PWD} migrate
+    volumes:
+      - ./ddl-scripts/read-db:/flyway/sql
   app:
     image: hseeberger/scala-sbt:11.0.14.1-oraclelinux8_1.6.2_2.13.8
     env_file:

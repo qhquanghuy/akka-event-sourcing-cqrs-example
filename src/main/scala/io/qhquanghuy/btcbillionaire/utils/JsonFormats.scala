@@ -9,6 +9,8 @@ import spray.json.DefaultJsonProtocol
 
 
 import io.qhquanghuy.btcbillionaire.domain._
+import io.qhquanghuy.btcbillionaire.domain.donationsummary._
+import io.qhquanghuy.btcbillionaire.domain.donation._
 import io.qhquanghuy.btcbillionaire.utils.models._
 
 object JsonFormats {

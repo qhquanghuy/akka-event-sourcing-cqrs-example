@@ -1,5 +1,6 @@
 package io.qhquanghuy.btcbillionaire.application.donation
 
+import java.time.ZonedDateTime
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,9 +20,11 @@ import akka.actor.testkit.typed.scaladsl.ActorTestKit
 import io.qhquanghuy.btcbillionaire.application.donation.DonationService
 import io.qhquanghuy.btcbillionaire.CreateTableTestUtils
 import io.qhquanghuy.btcbillionaire.Main
-import io.qhquanghuy.btcbillionaire.domain.DonationDTO
-import java.time.ZonedDateTime
+import io.qhquanghuy.btcbillionaire.domain.donation._
 import io.qhquanghuy.btcbillionaire.domain.BTCCreationError
+import io.qhquanghuy.btcbillionaire.adapter.command.DonationCommandHandler
+import io.qhquanghuy.btcbillionaire.port.command.CommandHandler
+import io.qhquanghuy.btcbillionaire.domain.donation.DonationCommand
 
 class DonationServiceTests extends AnyWordSpec
     with Matchers
@@ -33,7 +36,6 @@ class DonationServiceTests extends AnyWordSpec
   override protected def beforeAll(): Unit = {
     super.beforeAll()
     CreateTableTestUtils.dropAndRecreateTables(testKit.system)
-
     Main.init(testKit.system)
   }
 
@@ -42,7 +44,8 @@ class DonationServiceTests extends AnyWordSpec
     testKit.shutdownTestKit()
   }
 
-  lazy val donationService = new DonationService(testKit.system)
+  lazy val donationCommanndHandler: CommandHandler[DonationCommand] = new DonationCommandHandler(testKit.system)
+  lazy val donationService = new DonationService(donationCommanndHandler)
 
   implicit val timeoutAfter10 = timeout(10.seconds)
 
