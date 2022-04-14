@@ -9,6 +9,8 @@ import spray.json.DefaultJsonProtocol
 
 
 import io.qhquanghuy.btcbillionaire.domain._
+import io.qhquanghuy.btcbillionaire.domain.donationsummary._
+import io.qhquanghuy.btcbillionaire.domain.donation._
 import io.qhquanghuy.btcbillionaire.utils.models._
 
 object JsonFormats {
@@ -46,5 +48,6 @@ object JsonFormats {
 
   implicit val errorResponseFormat = jsonFormat2(ErrorResponse)
 
-  implicit val donationRequestFormat = jsonFormat2(DonationDTO)
+  implicit val donationDTOFormat = jsonFormat2(DonationDTO)
+  implicit val donationFormat = jsonFormat2(Donation)
 }

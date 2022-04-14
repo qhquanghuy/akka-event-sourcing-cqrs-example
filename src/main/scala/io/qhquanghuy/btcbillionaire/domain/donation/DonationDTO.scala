@@ -1,4 +1,4 @@
-package io.qhquanghuy.btcbillionaire.domain
+package io.qhquanghuy.btcbillionaire.domain.donation
 
 import java.time.ZonedDateTime
 

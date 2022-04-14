@@ -2,26 +2,25 @@ package io.qhquanghuy.btcbillionaire.application.donation
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext
 
 import spray.json.JsValue
 import org.slf4j.LoggerFactory
-
-import akka.actor.typed.ActorSystem
-import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 
 import cats.implicits._
 import cats.data.EitherT
 
 import io.qhquanghuy.btcbillionaire.domain._
+import io.qhquanghuy.btcbillionaire.domain.donation._
 import io.qhquanghuy.btcbillionaire.application.donation._
+import io.qhquanghuy.btcbillionaire.port.command.CommandHandler
 
 
-final class DonationService(system: ActorSystem[_]) {
-  import system.executionContext
+
+final class DonationService(commandHandler: CommandHandler[DonationCommand]) {
   private val logger = LoggerFactory.getLogger(getClass)
-  private val sharding = ClusterSharding(system)
 
-  def donate(dto: DonationDTO) = {
+  def donate(dto: DonationDTO)(implicit ctx: ExecutionContext) = {
 
     logger.info(s"processing: ${dto}")
 
@@ -32,8 +31,7 @@ final class DonationService(system: ActorSystem[_]) {
 
     EitherT(future)
       .flatMapF { donation =>
-        val ref = sharding.entityRefFor(DonationCommand.EntityKey, Wallet.Address)
-        ref.askWithStatus(Command.Donate(donation, _))(5.seconds)
+        commandHandler.handle(DonationCommand.Donate(donation))
           .map(Right.apply)
       }
   }

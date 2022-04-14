@@ -1,4 +1,4 @@
-package io.qhquanghuy.btcbillionaire.application.donation
+package io.qhquanghuy.btcbillionaire.adapter.command
 
 import scala.concurrent.duration._
 
@@ -8,28 +8,43 @@ import akka.persistence.typed.PersistenceId
 import akka.persistence.typed.scaladsl._
 import akka.pattern.StatusReply
 import akka.actor.typed.ActorSystem
+import akka.actor.typed.ActorRef
 
-import io.qhquanghuy.btcbillionaire.application.donation.Command.Donate
-import io.qhquanghuy.btcbillionaire.application.donation.Event.Donated
-import akka.cluster.sharding.typed.scaladsl.EntityContext
-import akka.cluster.sharding.typed.scaladsl.ClusterSharding
-import akka.cluster.sharding.typed.scaladsl.Entity
+import akka.cluster.sharding.typed.scaladsl.{EntityContext, ClusterSharding, Entity}
 
-object DonationCommand {
+import io.qhquanghuy.btcbillionaire.domain.Wallet
+import io.qhquanghuy.btcbillionaire.domain.donation.{Event => DonationEvent, Donation}
+import org.slf4j.LoggerFactory
+
+
+sealed trait Command
+object Command {
+  final case class Donate(donation: Donation, replyTo: ActorRef[StatusReply[Wallet]]) extends Command
+}
+object DonationPersistence {
   val EntityKey: EntityTypeKey[Command] = EntityTypeKey[Command]("DonationCommand")
-  val Tag = "DonationCommand"
+  val Tag = "Donation"
+
+  type Event = DonationEvent
+
+  val logger = LoggerFactory.getLogger(this.getClass())
 
   private def handleCommand(walletAddress: String, state: State, command: Command): ReplyEffect[Event, State] = {
     command match {
-      case Donate(donation, replyTo) =>
-        Effect.persist(Event.Donated(donation))
-          .thenReply(replyTo)(updatedState => StatusReply.success(updatedState.wallet))
+      case Command.Donate(donation, replyTo) =>
+        logger.info(s"handleCommand ${command}")
+        Effect.persist(DonationEvent.Donated(donation))
+          .thenReply(replyTo)(updatedState => {
+            logger.info(s"handleCommand ${command}, thenReply ${updatedState.wallet}")
+            StatusReply.success(updatedState.wallet)
+          })
     }
   }
 
   private def handleEvent(state: State, event: Event): State = {
+    logger.info(s"handleEvent ${event}, ${state.wallet}")
     event match {
-      case Donated(donation) => state.add(donation.amount)
+      case DonationEvent.Donated(donation) => state.add(donation.amount)
     }
   }
 
@@ -54,7 +69,7 @@ object DonationCommand {
   def init(system: ActorSystem[_]): Unit = {
     val behaviorFactory: EntityContext[Command] => Behavior[Command] = {
       entityContext =>
-        DonationCommand(entityContext.entityId)
+        DonationPersistence(entityContext.entityId)
     }
     ClusterSharding(system).init(Entity(EntityKey)(behaviorFactory))
   }

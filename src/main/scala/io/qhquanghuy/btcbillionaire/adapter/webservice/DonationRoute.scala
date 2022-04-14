@@ -11,7 +11,7 @@ import spray.json._
 
 import _root_.io.qhquanghuy.btcbillionaire.application.donation.DonationService
 import _root_.io.qhquanghuy.btcbillionaire.utils.JsonFormats._
-import _root_.io.qhquanghuy.btcbillionaire.domain.DonationDTO
+import _root_.io.qhquanghuy.btcbillionaire.domain.donation.DonationDTO
 import _root_.io.qhquanghuy.btcbillionaire.utils.models._
 
 final class DonationRoute(donationService: DonationService) {
